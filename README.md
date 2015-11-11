@@ -70,34 +70,15 @@ Sample hosts file:
 
 Sample host_vars/leaf1.example.com
 
-    bgp:
-      enable: true
-      bgp_as: 65001
-      maximum_paths: 25
-      maximum_ecmp_paths: 100
-      redistribute:
-        - connected
-        - aggregate
-      log_neighbor_changes: yes
-      timers:
-        keep_alive: 0
-        hold: 0
-      neighbors:
-        - name: 10.1.1.1
-          remote_as: 65002
-          peer_group: demoleaf
-          enable: true
-        - name: 10.1.1.3
-          remote_as: 65002
-          peer_group: demoleaf
-          enable: true
-      listeners:
-        - name: 10.1.0.0/16
-          peer_group: demoleaf
-          remote_as: 65003
-
-    eos_purge_bgp_networks: no
-    eos_purge_bgp_neighbors: no
+    interfaces:
+      - name: Ethernet1
+        description: Link to Peer1
+      - name: Ethernet2
+        description: Link to Peer1
+      - name: Loopback1000
+        description: Loopback for BGP
+      - name: Port-Channel50
+        description: Peer Channel-group
 
 
 A simple playbook to configure BGP, leaf.yml
