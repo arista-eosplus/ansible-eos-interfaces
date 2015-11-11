@@ -1,13 +1,16 @@
 Interfaces Role for EOS
 =======================
 
-The arista.eos-interfaces role creates an abstraction for EOS BGP configuration.
+The arista.eos-interfaces role creates an abstraction for EOS interface configuration.
 This means that you do not need to write any ansible tasks. Simply create
 an object that matches the requirements below and this role will ingest that
 object and perform the necessary configuration.
 
-This role specifically enables configuration of BGP router, timers, neighbors,
-networks and listeners.
+This role is used to configure the basics of an interface, for example it will
+simply create the interface, enable or disable it and set the description. It will
+do this for any valid interface in EOS. This role would be used prior to setting
+an IP Address on an interface or before setting more advanced Port-Channel
+configuration.
 
 Installation
 ------------
