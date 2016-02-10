@@ -6,13 +6,21 @@
 {% set state = item.state | default(default_state) %}
 
 {% if state == 'absent' %}
-    {# remove interface if it exists #}
-    {% set intf_block = base_config | re_search("^interface %s$" % intf) %}
-    {% if intf_block %}
+    {# Ethernet Interfaces can only be defaulted, not removed #}
+    {% if 'Ethernet' in intf %}
+
+default interface {{ intf }}
+
+    {% else %}
+        {# remove interface if it exists #}
+        {% set intf_block = base_config | re_search("^interface %s$" % intf) %}
+        {% if intf_block %}
 
 no interface {{ intf }}
 
+        {% endif %}
     {% endif %}
+
 {% elif state == 'present' %}
     {# Set up interface #}
 
@@ -67,11 +75,9 @@ description {{ desc }}
 
             {% endif %}
         {% endif %}
-        {% set enbl = item.enable | default(default_enable) %}
-        {% if enbl is defined and not enbl %}
+        {% set enbl = (item.enable|default(default_enable) == True) | ternary('no shutdown','shutdown') %}
 
-shutdown
+   {{ enbl }}
 
-        {% endif %}
     {% endif %}
 {% endif %}
