@@ -23,8 +23,9 @@ ansible-galaxy install arista.eos-interfaces
 Requirements
 ------------
 
-Requires the arista.eos role.  If you have not worked with the arista.eos role,
-consider following the [Quickstart][quickstart] guide.
+Requires an SSH connection for connectivity to your Arista device. You can use
+any of the built-in eos connection variables, or the convenience ``provider``
+dictionary.
 
 Role Variables
 --------------
@@ -49,10 +50,10 @@ Note: Asterisk (*) denotes the default value if none specified
 Dependencies
 ------------
 
-The eos-interfaces role utilizes modules distributed within the arista.eos role.
-The eos-interfaces roles requires:
+The eos-interfaces role is built on modules included in the core Ansible code.
+These modules were added in ansible version 2.1
 
-- arista.eos version 1.2.0
+- Ansible 2.1.0
 
 Example Playbook
 ----------------

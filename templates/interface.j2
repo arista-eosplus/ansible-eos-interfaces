@@ -1,0 +1,77 @@
+! templates/interface.j2
+#jinja2: trim_blocks: False
+#jinja2: lstrip_blocks: False
+
+{% set intf = item.name %}
+{% set state = item.state | default(default_state) %}
+
+{% if state == 'absent' %}
+    {# remove interface if it exists #}
+    {% set intf_block = base_config | re_search("^interface %s$" % intf) %}
+    {% if intf_block %}
+
+no interface {{ intf }}
+
+    {% endif %}
+{% elif state == 'present' %}
+    {# Set up interface #}
+
+    {% set intf_block = base_config | config_block('interface ' ~ item.name, indent=3) %}
+
+    {% if intf_block %}
+        {# Interface exists - make sure parameters match #}
+
+interface {{ intf }}
+
+        {# Set the description if necessary #}
+        {% if item.description is defined %}
+            {% set desc = item.description %}
+            {% if desc %}
+
+   description {{ desc }}
+
+            {% elif desc == '' %}
+                {# description contains empty string #}
+                {# default current description if one exists #}
+                {% set intf_desc = intf_block | join('\n') | re_search('^no description') %}
+                {% if not intf_desc %}
+
+   default description
+
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+        {# Enable/disable interface if necessary #}
+        {% set enable = item.enable | default(default_enable) %}
+        {% if enable %}
+
+   no shutdown
+
+        {% elif enable is defined and not enable %}
+
+   shutdown
+
+        {% endif %}
+
+    {% else %}
+        {# Interface does not yet exist #}
+
+interface {{ intf }}
+
+        {% if item.description is defined %}
+            {% set desc = item.description %}
+            {% if desc is defined and desc %}
+
+description {{ desc }}
+
+            {% endif %}
+        {% endif %}
+        {% set enbl = item.enable | default(default_enable) %}
+        {% if enbl is defined and not enbl %}
+
+shutdown
+
+        {% endif %}
+    {% endif %}
+{% endif %}
