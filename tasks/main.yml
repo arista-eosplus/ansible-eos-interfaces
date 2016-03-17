@@ -1,7 +1,7 @@
 ---
 - name: Gather EOS configuration
   eos_command:
-    commands: 'show running-config all | exclude \.\*'
+    commands: 'show running-config all'
     provider: "{{ provider|default(omit) }}"
     auth_pass: "{{ auth_pass|default(omit) }}"
     authorize: "{{ authorize|default(omit) }}"
@@ -12,16 +12,20 @@
     use_ssl: "{{ use_ssl|default(omit) }}"
     username: "{{ username|default(omit) }}"
   register: output
+  no_log: "{{ no_log|default(true) }}"
+  when: _eos_config is not defined
 
 - name: Save EOS configuration
   set_fact:
-    base_config: "{{ output.result[0] }}"
+    _eos_config: "{{ output.stdout[0] }}"
+  no_log: "{{ no_log|default(true) }}"
+  when: _eos_config is not defined
 
-- name: Configure Arista EOS interfaces
+- name: Arista EOS interface resources
   eos_template:
     src: interface.j2
     include_defaults: true
-    config: "{{ base_config | default(omit) }}"
+    config: "{{ _eos_config | default(omit) }}"
     auth_pass: "{{ auth_pass | default(omit) }}"
     authorize: "{{ authorize | default(omit) }}"
     host: "{{ host | default(omit) }}"
@@ -31,5 +35,5 @@
     transport: 'cli'
     use_ssl: "{{ use_ssl | default(omit) }}"
     username: "{{ username | default(omit) }}"
-  when: interfaces is defined and item.name|mandatory
-  with_items: "{{ interfaces }}"
+  when: item.name is defined
+  with_items: "{{ interfaces | default([]) }}"

@@ -13,7 +13,7 @@ default interface {{ intf }}
 
     {% else %}
         {# remove interface if it exists #}
-        {% set intf_block = base_config | re_search("^interface %s$" % intf) %}
+        {% set intf_block = _eos_config | re_search("^interface %s$" % intf) %}
         {% if intf_block %}
 
 no interface {{ intf }}
@@ -24,7 +24,7 @@ no interface {{ intf }}
 {% elif state == 'present' %}
     {# Set up interface #}
 
-    {% set intf_block = base_config | config_block('interface ' ~ item.name, indent=3) %}
+    {% set intf_block = _eos_config | config_block('interface ' ~ item.name, indent=3) %}
 
     {% if intf_block %}
         {# Interface exists - make sure parameters match #}
