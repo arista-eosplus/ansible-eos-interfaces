@@ -1,0 +1,103 @@
+---
+defaults:
+  module: intf_description
+
+testcases:
+  - name: Add description for interfaces without existing description
+    arguments:
+      interfaces:
+        - name: Ethernet2
+          description: Link to Peer1
+        - name: Loopback1000
+          description: Loopback for BGP
+        - name: Port-Channel50
+          description: Peer Channel-group
+    setup: |
+      no interface Loopback 1000
+      no interface Port-Channel 50
+      interface Ethernet2
+      no description
+      interface Loopback 1000
+      no description
+      interface Port-Channel 50
+      no description
+    present: |
+      interface Ethernet2
+         description Link to Peer1
+      interface Loopback1000
+         description Loopback for BGP
+      interface Port-Channel50
+         description Peer Channel-group
+    absent: |
+      interface Ethernet2
+         no description
+      interface Loopback1000
+         no description
+      interface Port-Channel50
+         no description
+
+  - name: Remove descriptions from existing interfaces
+    arguments:
+      interfaces:
+        - name: Ethernet2
+          description: ''
+        - name: Loopback1000
+          description: ''
+        - name: Port-Channel50
+          description: ''
+    setup: |
+      no interface Loopback 1000
+      no interface Port-Channel 50
+      interface Ethernet2
+      description Link to Peer1
+      interface Loopback 1000
+      description Loopback for BGP
+      interface Port-Channel 50
+      description Peer Channel-group
+    present: |
+      interface Ethernet2
+         no description
+      interface Loopback1000
+         no description
+      interface Port-Channel50
+         no description
+    absent: |
+      interface Ethernet2
+         description Link to Peer1
+      interface Loopback1000
+         description Loopback for BGP
+      interface Port-Channel50
+         description Peer Channel-group
+
+  - name: Modify description for existing interfaces
+    arguments:
+      interfaces:
+        - name: Ethernet2
+          description: Link to Peer1
+        - name: Loopback1000
+          description: Loopback for BGP
+        - name: Port-Channel50
+          description: Peer Channel-group
+    setup: |
+      no interface Loopback 1000
+      no interface Port-Channel 50
+      interface Ethernet2
+      description Original Ethernet description
+      interface Loopback 1000
+      description Original Loopback description
+      interface Port-Channel 50
+      description Original Port-Channel description
+    present: |
+      interface Ethernet2
+         description Link to Peer1
+      interface Loopback1000
+         description Loopback for BGP
+      interface Port-Channel50
+         description Peer Channel-group
+    absent: |
+      interface Ethernet2
+         description Original Ethernet description
+      interface Loopback1000
+         description Original Loopback description
+      interface Port-Channel50
+         description Original Port-Channel description

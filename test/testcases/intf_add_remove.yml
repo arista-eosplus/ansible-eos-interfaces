@@ -1,0 +1,132 @@
+---
+defaults:
+  module: intf_add_remove
+
+testcases:
+  - name: Add nonexistent interfaces
+    arguments:
+      interfaces:
+        - name: Loopback1000
+          description: Loopback for BGP
+        - name: Port-Channel50
+          description: Peer Channel-group
+    setup: |
+      no interface Loopback 1000
+      no interface Port-Channel 50
+    present: |
+      interface Loopback1000
+         description Loopback for BGP
+         no shutdown
+      interface Port-Channel50
+         description Peer Channel-group
+         no shutdown
+
+  - name: Remove existing interfaces
+    arguments:
+      interfaces:
+        - name: Loopback1000
+          state: absent
+        - name: Port-Channel50
+          state: absent
+    setup: |
+      no interface Loopback 1000
+      no interface Port-Channel 50
+      interface Loopback 1000
+      description Loopback for BGP
+      interface Port-Channel 50
+      description Peer Channel-group
+    absent: |
+      interface Loopback1000
+      interface Port-Channel50
+
+  - name: Add preexisting interfaces
+    changed: false
+    arguments:
+      interfaces:
+        - name: Loopback1000
+          description: Loopback for BGP
+        - name: Port-Channel50
+          description: Peer Channel-group
+        - name: Loopback950
+          description: Loopback2 for BGP
+          enable: false
+        - name: Port-Channel40
+          description: Peer Channel-group2
+          enable: false
+    setup: |
+      no interface Loopback 1000
+      no interface Port-Channel 50
+      no interface Loopback 950
+      no interface Port-Channel 40
+      interface Loopback 1000
+      description Loopback for BGP
+      no shutdown
+      interface Port-Channel 50
+      description Peer Channel-group
+      no shutdown
+      interface Loopback 950
+      description Loopback2 for BGP
+      shutdown
+      interface Port-Channel 40
+      description Peer Channel-group2
+      shutdown
+    present: |
+      interface Loopback1000
+         description Loopback for BGP
+         no shutdown
+      interface Port-Channel50
+         description Peer Channel-group
+         no shutdown
+      interface Loopback950
+         description Loopback2 for BGP
+         shutdown
+      interface Port-Channel40
+         description Peer Channel-group2
+         shutdown
+
+  - name: Remove nonexistent interfaces
+    changed: false
+    arguments:
+      interfaces:
+        - name: Loopback900
+          state: absent
+        - name: Port-Channel30
+          state: absent
+    setup: |
+      no interface Loopback 900
+      no interface Port-Channel 30
+    absent: |
+      interface Ethernet100
+      interface Loopback900
+      interface Port-Channel30
+
+  - name: Add and remove in one pass
+    arguments:
+      interfaces:
+        - name: Loopback1000
+          description: Loopback for BGP
+        - name: Port-Channel50
+          description: Peer Channel-group
+        - name: Loopback900
+          state: absent
+        - name: Port-Channel30
+          state: absent
+    setup: |
+      no interface Loopback 1000
+      no interface Port-Channel 50
+      no interface Loopback 900
+      no interface Port-Channel 30
+      interface Loopback 900
+      description To be removed 900
+      interface Port-Channel 30
+      description To be removed 30
+    present: |
+      interface Loopback1000
+         description Loopback for BGP
+         no shutdown
+      interface Port-Channel50
+         description Peer Channel-group
+         no shutdown
+    absent: |
+      interface Loopback900
+      interface Port-Channel30
