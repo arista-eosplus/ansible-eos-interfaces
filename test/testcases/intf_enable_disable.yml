@@ -1,0 +1,68 @@
+---
+defaults:
+  module: intf_enable_disable
+
+testcases:
+  - name: Enable interfaces
+    arguments:
+      interfaces:
+        - name: Ethernet2
+          description: Second Ethernet
+          enable: true
+        - name: Loopback1000
+          description: Loopback for BGP
+          enable: true
+        - name: Port-Channel50
+          description: Peer Channel-group
+          enable: true
+    setup: |
+      no interface Loopback 1000
+      no interface Port-Channel 50
+      interface Ethernet 2
+      shutdown
+      interface Loopback 1000
+      shutdown
+      interface Port-Channel 50
+      shutdown
+    present: |
+      interface Ethernet2
+         description Second Ethernet
+         no shutdown
+      interface Loopback1000
+         description Loopback for BGP
+         no shutdown
+      interface Port-Channel50
+         description Peer Channel-group
+         no shutdown
+
+  - name: Disable interfaces
+    arguments:
+      interfaces:
+        - name: Ethernet2
+          description: Second Ethernet
+          enable: false
+        - name: Loopback1000
+          description: Loopback for BGP
+          enable: false
+        - name: Port-Channel50
+          description: Peer Channel-group
+          enable: false
+    setup: |
+      no interface Loopback 1000
+      no interface Port-Channel 50
+      interface Ethernet 2
+      no shutdown
+      interface Loopback 1000
+      no shutdown
+      interface Port-Channel 50
+      no shutdown
+    present: |
+      interface Ethernet2
+         description Second Ethernet
+         shutdown
+      interface Loopback1000
+         description Loopback for BGP
+         shutdown
+      interface Port-Channel50
+         description Peer Channel-group
+         shutdown

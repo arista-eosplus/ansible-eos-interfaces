@@ -2,6 +2,9 @@
 __pycache__/
 *.py[cod]
 
+# Ansible stuff
+*.retry
+
 # C extensions
 *.so
 
