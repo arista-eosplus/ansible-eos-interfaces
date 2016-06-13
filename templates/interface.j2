@@ -6,76 +6,76 @@
 {% set state = item.state | default(default_state) %}
 
 {% if state == 'absent' %}
-  {# Ethernet Interfaces can only be defaulted, not removed #}
-  {% if 'Ethernet' in intf %}
+   {# Ethernet Interfaces can only be defaulted, not removed #}
+   {% if 'Ethernet' in intf %}
 
 default interface {{ intf }}
 
-  {% else %}
-    {# remove interface if it exists #}
-    {% set intf_block = _eos_config | re_search("^interface %s$" % intf) %}
-    {% if intf_block %}
+   {% else %}
+      {# remove interface if it exists #}
+      {% set intf_block = _eos_config | re_search("^interface %s$" % intf) %}
+      {% if intf_block %}
 
 no interface {{ intf }}
 
-    {% endif %}
-  {% endif %}
+      {% endif %}
+   {% endif %}
 
 {% elif state == 'present' %}
-  {# Set up interface #}
-  {% set intf_block = _eos_config | config_block('interface ' ~ item.name, indent=3) %}
-  {% if intf_block %}
-    {# Interface exists - make sure parameters match #}
+   {# Set up interface #}
+   {% set intf_block = _eos_config | config_block('interface ' ~ item.name, indent=3) %}
+   {% if intf_block %}
+      {# Interface exists - make sure parameters match #}
 
 interface {{ intf }}
 
-    {# Set the description if necessary #}
-    {% if item.description is defined %}
-      {% set desc = item.description %}
-      {% if desc %}
+      {# Set the description if necessary #}
+      {% if item.description is defined %}
+         {% set desc = item.description %}
+         {% if desc %}
 
    description {{ desc }}
 
-      {% elif desc == '' %}
-        {# description contains empty string #}
-        {# default current description if one exists #}
-        {% set intf_desc = intf_block | join('\n') | re_search('^no description') %}
-        {% if not intf_desc %}
+         {% elif desc == '' %}
+            {# description contains empty string #}
+            {# default current description if one exists #}
+            {% set intf_desc = intf_block | join('\n') | re_search('^no description') %}
+            {% if not intf_desc %}
 
    default description
 
-        {% endif %}
+            {% endif %}
+         {% endif %}
       {% endif %}
-    {% endif %}
 
-    {# Enable/disable interface if necessary #}
-    {% set enable = item.enable | default(default_enable) %}
-    {% if enable %}
+      {# Enable/disable interface if necessary #}
+      {% set enable = item.enable | default(default_enable) %}
+      {% if enable %}
 
    no shutdown
 
-    {% elif enable is defined and not enable %}
+      {% elif enable is defined and not enable %}
 
    shutdown
 
-    {% endif %}
+      {% endif %}
 
-  {% else %}
-    {# Interface does not yet exist #}
+   {% else %}
+      {# Interface does not yet exist #}
 
 interface {{ intf }}
 
-    {% if item.description is defined %}
-      {% set desc = item.description %}
-      {% if desc is defined and desc %}
+      {% if item.description is defined %}
+         {% set desc = item.description %}
+         {% if desc is defined and desc %}
 
    description {{ desc }}
 
+         {% endif %}
       {% endif %}
-    {% endif %}
-    {% set enbl = (item.enable|default(default_enable) == True) | ternary('no shutdown','shutdown') %}
+      {% set enbl = (item.enable|default(default_enable) == True) | ternary('no shutdown','shutdown') %}
 
    {{ enbl }}
 
-  {% endif %}
+   {% endif %}
 {% endif %}
