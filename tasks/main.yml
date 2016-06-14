@@ -35,5 +35,6 @@
     transport: 'cli'
     use_ssl: "{{ use_ssl | default(omit) }}"
     username: "{{ username | default(omit) }}"
+  notify: save running config
   when: item.name is defined
   with_items: "{{ interfaces | default([]) }}"
