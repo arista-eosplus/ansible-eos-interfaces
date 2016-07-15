@@ -1,4 +1,6 @@
 ---
 # defaults file for eos-interfaces
+eos_save_running_config: true
+
 default_state: present
 default_enable: true
