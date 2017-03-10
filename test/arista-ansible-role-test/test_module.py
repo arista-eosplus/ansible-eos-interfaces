@@ -250,11 +250,12 @@ class TestModule(object):
                 #       interface Loopback 3
                 # We also need to have a valid command in the 'lines'
                 # parameter that is not in the running-config to ensure
-                # the commands are run - use 'show version'
+                # the commands are run - use 'configure terminal', which
+                # is an effective no-op
                 args = {
                     'module': 'eos_config',
                     'description': 'Run test case setup commands',
-                    'lines': ['show version'],
+                    'lines': ['configure terminal'],
                     'before': ['configure terminal'] + setup_cmds,
                     'match': 'none',
                 }
