@@ -26,8 +26,8 @@ testcases:
       shutdown
     present: |
       interface Ethernet2
-         description Second Ethernet
          no shutdown
+         description Second Ethernet
       interface Loopback1000
          description Loopback for BGP
          no shutdown

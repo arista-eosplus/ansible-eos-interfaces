@@ -31,9 +31,9 @@ testcases:
     absent: |
       interface Ethernet2
          no description
-      interface Loopback1000
-         no description
       interface Port-Channel50
+         no description
+      interface Loopback1000
          no description
 
   - name: Remove descriptions from existing interfaces
