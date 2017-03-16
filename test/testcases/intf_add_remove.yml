@@ -96,7 +96,6 @@ testcases:
       no interface Loopback 900
       no interface Port-Channel 30
     absent: |
-      interface Ethernet100
       interface Loopback900
       interface Port-Channel30
 
