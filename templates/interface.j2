@@ -23,22 +23,21 @@ no interface {{ intf }}
 
 {% elif state == 'present' %}
    {# Set up interface #}
-   {% set intf_block = _eos_config | config_block('interface ' ~ item.name, indent=3) %}
-   {% if intf_block %}
-      {# Interface exists - make sure parameters match #}
 
 interface {{ intf }}
 
-      {# Set the description if necessary #}
-      {% if item.description is defined %}
-         {% set desc = item.description %}
-         {% if desc %}
+   {% set intf_block = _eos_config | config_block('interface ' ~ item.name, indent=3) %}
+
+   {% if item.description is defined %}
+      {% set desc = item.description %}
+      {% if desc is defined and desc %}
 
    description {{ desc }}
 
-         {% elif desc == '' %}
-            {# description contains empty string #}
-            {# default current description if one exists #}
+      {% elif desc == '' %}
+         {# description contains empty string #}
+         {# default current description if one exists #}
+         {% if intf_block %}
             {% set intf_desc = intf_block | join('\n') | re_search('^no description') %}
             {% if not intf_desc %}
 
@@ -47,35 +46,16 @@ interface {{ intf }}
             {% endif %}
          {% endif %}
       {% endif %}
-
-      {# Enable/disable interface if necessary #}
-      {% set enable = item.enable | default(default_enable) %}
-      {% if enable %}
-
-   no shutdown
-
-      {% elif enable is defined and not enable %}
-
-   shutdown
-
-      {% endif %}
-
    {% else %}
-      {# Interface does not yet exist #}
+      {# no description defined at all #}
 
-interface {{ intf }}
-
-      {% if item.description is defined %}
-         {% set desc = item.description %}
-         {% if desc is defined and desc %}
-
-   description {{ desc }}
-
-         {% endif %}
-      {% endif %}
-      {% set enbl = (item.enable|default(default_enable) == True) | ternary('no shutdown','shutdown') %}
-
-   {{ enbl }}
+   default description
 
    {% endif %}
+
+
+   {# Enable/disable interface if necessary #}
+   {% set enbl = (item.enable|default(default_enable) == True) | ternary('no shutdown','shutdown') %}
+
+   {{ enbl }}
 {% endif %}
