@@ -15,7 +15,9 @@
 
 - name: Gather EOS configuration
   eos_command:
-    commands: 'show running-config all | exclude \.\*'
+    commands:
+      - command: 'show running-config all | exclude \.\*'
+        output: text
     provider: "{{ provider | default(omit) }}"
   register: output
   no_log: "{{ no_log | default(true) }}"
