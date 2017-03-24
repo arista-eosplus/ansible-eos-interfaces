@@ -53,6 +53,18 @@ interface {{ intf }}
 
    {% endif %}
 
+   {% if item.channel_group is defined %}
+      {% set cg = item.channel_group %}
+
+   channel-group {{ cg.number }} mode {{ cg.mode|default("active")}}
+
+   {% else %}
+      {% if 'Ethernet' in intf %}
+
+   default channel-group
+
+      {% endif %}
+   {% endif %}
 
    {# Enable/disable interface if necessary #}
    {% set enbl = (item.enable|default(default_enable) == True) | ternary('no shutdown','shutdown') %}
