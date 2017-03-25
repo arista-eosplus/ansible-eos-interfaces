@@ -128,12 +128,22 @@ interface {{ intf }}
    default switchport mode
 
       {% endif %}
+      {% if vlan.allowed is defined and vlan.allowed %}
+
+   switchport trunk allowed vlan {{ vlan.allowed|string }}
+
+      {% else %}
+
+   default switchport trunk allowed vlan
+
+      {% endif %}
 
    {% else %}
 
    default switchport access vlan
    default switchport mode
    default switchport trunk native vlan
+   default switchport trunk allowed vlan
 
    {% endif %}
 
