@@ -98,6 +98,25 @@ interface {{ intf }}
       {% endif %}
    {% endif %}
 
+   {# vlan #}
+   {% if item.vlan is defined %}
+      {% set vlan = item.vlan %}
+      {% if vlan.access is defined and vlan.access %}
+
+   switchport access vlan {{ vlan.access }}
+
+      {% else %}
+
+   default switchport access vlan
+
+      {% endif %}
+
+   {% else %}
+
+   default switchport access vlan
+
+   {% endif %}
+
    {# Enable/disable interface if necessary #}
    {% set enbl = (item.enable|default(default_enable) == True) | ternary('no shutdown','shutdown') %}
 
