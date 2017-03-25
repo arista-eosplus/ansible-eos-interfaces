@@ -137,6 +137,15 @@ interface {{ intf }}
    default switchport trunk allowed vlan
 
       {% endif %}
+      {% if vlan.group is defined and vlan.group %}
+
+   switchport trunk group {{ vlan.group }}
+
+      {% else %}
+
+   default switchport trunk group
+
+      {% endif %}
 
    {% else %}
 
@@ -144,6 +153,7 @@ interface {{ intf }}
    default switchport mode
    default switchport trunk native vlan
    default switchport trunk allowed vlan
+   default switchport trunk group
 
    {% endif %}
 
