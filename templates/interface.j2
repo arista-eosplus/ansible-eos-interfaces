@@ -68,7 +68,8 @@ interface {{ intf }}
    {% endif %}
 
    {# lacp #}
-   {% if item.lacp is defined %}
+   {% if 'Ethernet' in intf %}
+   {% if item.lacp is defined and 'Ethernet' in intf %}
       {% set lacp = item.lacp %}
       {% if lacp.priority is defined and lacp.priority %}
 
@@ -90,12 +91,11 @@ interface {{ intf }}
       {% endif %}
 
    {% else %}
-      {% if 'Ethernet' in intf %}
 
    default lacp port-priority
    default lacp rate
 
-      {% endif %}
+   {% endif %}
    {% endif %}
 
    {# vlan #}
