@@ -119,11 +119,21 @@ interface {{ intf }}
    default switchport mode
 
       {% endif %}
+      {% if vlan.native is defined and vlan.native %}
+
+   switchport trunk native vlan {{ vlan.native }}
+
+      {% else %}
+
+   default switchport mode
+
+      {% endif %}
 
    {% else %}
 
    default switchport access vlan
    default switchport mode
+   default switchport trunk native vlan
 
    {% endif %}
 
