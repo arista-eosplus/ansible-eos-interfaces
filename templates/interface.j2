@@ -110,10 +110,20 @@ interface {{ intf }}
    default switchport access vlan
 
       {% endif %}
+      {% if vlan.mode is defined and vlan.mode %}
+
+   switchport mode {{ vlan.mode }}
+
+      {% else %}
+
+   default switchport mode
+
+      {% endif %}
 
    {% else %}
 
    default switchport access vlan
+   default switchport mode
 
    {% endif %}
 
