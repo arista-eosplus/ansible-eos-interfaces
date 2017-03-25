@@ -53,6 +53,7 @@ interface {{ intf }}
 
    {% endif %}
 
+   {# channel group #}
    {% if item.channel_group is defined %}
       {% set cg = item.channel_group %}
 
@@ -61,7 +62,38 @@ interface {{ intf }}
    {% else %}
       {% if 'Ethernet' in intf %}
 
-   default channel-group
+   no channel-group
+
+      {% endif %}
+   {% endif %}
+
+   {# lacp #}
+   {% if item.lacp is defined %}
+      {% set lacp = item.lacp %}
+      {% if lacp.priority is defined and lacp.priority %}
+
+   lacp port-priority {{ lacp.priority }}
+
+      {% else %}
+
+   default lacp port-priority
+
+      {% endif %}
+      {% if lacp.rate is defined and lacp.rate %}
+
+   lacp rate {{ lacp.rate }}
+
+      {% else %}
+
+   default lacp rate
+
+      {% endif %}
+
+   {% else %}
+      {% if 'Ethernet' in intf %}
+
+   default lacp port-priority
+   default lacp rate
 
       {% endif %}
    {% endif %}
