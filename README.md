@@ -34,12 +34,24 @@ The tasks in this role are driven by the ``interfaces`` object described below:
 
 **interfaces** (list) each entry contains the following keys:
 
-|         Key | Type                      | Notes                                                                                                                                                                                                |
-|------------:|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|        name | string (required)         | The unique interface identifier name. The interface name must use the full interface name (no abbreviated names). For example, interfaces should be specified as Ethernet1 not Et1                   |
-| description | string                    | Configures a one lne ASCII description for the interface.                                                                                                                                            |
-|      enable | boolean: true*, false     | Configures the administrative state for the interface. Setting the value to true will adminstrative enable the interface and setting the value to false will administratively disable the interface. |
-|       state | choices: present*, absent | Set the state for the interface configuration.                                                                                                                                                       |
+|           Key | Type                          | Notes                                                                                                                                                                                                |
+|--------------:|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|          name | string (required)             | The unique interface identifier name. The interface name must use the full interface name (no abbreviated names). For example, interfaces should be specified as Ethernet1 not Et1                   |
+|   description | string                        | Configures a one lne ASCII description for the interface.                                                                                                                                            |
+|        enable | boolean: true*, false         | Configures the administrative state for the interface. Setting the value to true will adminstrative enable the interface and setting the value to false will administratively disable the interface. |
+|         state | choices: present*, absent     | Set the state for the interface configuration.                                                                                                                                                       |
+| channel_group | dictionary                    | Configure the interface in a Port Channel. If not present, or number sub key is missing, the Port Channel with be defaulted to be removed                                                            |
+|         .mode | choices: on, active*, passive | Set the mode of the the Port Channel group.                                                                                                                                                          |
+|       .number | integer                       | Set the number the Port Channel group.                                                                                                                                                               |
+|          lacp | dictionary                    | Configure lacp paramaters for Ethernet interface, if not present both settings will be defaulted                                                                                                     |
+|     .priority | integer                       | Set the lacp port-priority. Default if not present                                                                                                                                                   |
+|         .rate | choices: normal*, fast        | Set the lacp rate. Defaulted if not present                                                                                                                                                          |
+|          vlan | dictionary                    | Configure switchport vlan settings for interface based on subkey, if not present all sub settings will be defaulted                                                                                  |
+|         .mode | choices: access*, trunk, etc  | Connfigure switchport mode for the interface. If not present will be defaulted (same as access)                                                                                                      |
+|       .access | integer                       | Set switchport access vlan to given number, when in switchport mode access                                                                                                                           |
+|       .native | integer                       | Set switchport native trunk vlan, when in switchport mode trunk.                                                                                                                                     |
+|      .allowed | string                        | Set the vlans allowed on in the inerface when using trunk mode                                                                                                                                       |
+|        .group | string                        | Set the trunk group allowed on the interface                                                                                                                                                         |
 
 
 ```
