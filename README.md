@@ -7,10 +7,16 @@ an object that matches the requirements below and this role will ingest that
 object and perform the necessary configuration.
 
 This role is used to configure the basics of an interface, for example it will
-simply create the interface, enable or disable it and set the description. It will
-do this for any valid interface in EOS. This role would be used prior to setting
-an IP Address on an interface or before setting more advanced Port-Channel
-configuration.
+simply create the interface, enable or disable it and set the description. Also
+availabe are options for setting port channel-group number and mode, and the
+lacp port-priority and rate. It will do this for any valid interface in EOS.
+This role would be used prior to setting an IP Address on an interface or
+before setting more advanced Port-Channel configuration.
+
+```
+Note: Options for setting switchport vlan information are available in the
+ansible-eos-bridging role, also available through Ansible Galaxy or GitHub.
+```
 
 Installation
 ------------
@@ -34,12 +40,17 @@ The tasks in this role are driven by the ``interfaces`` object described below:
 
 **interfaces** (list) each entry contains the following keys:
 
-|         Key | Type                      | Notes                                                                                                                                                                                                |
-|------------:|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|        name | string (required)         | The unique interface identifier name. The interface name must use the full interface name (no abbreviated names). For example, interfaces should be specified as Ethernet1 not Et1                   |
-| description | string                    | Configures a one lne ASCII description for the interface.                                                                                                                                            |
-|      enable | boolean: true*, false     | Configures the administrative state for the interface. Setting the value to true will adminstrative enable the interface and setting the value to false will administratively disable the interface. |
-|       state | choices: present*, absent | Set the state for the interface configuration.                                                                                                                                                       |
+|                  Key | Type                          | Notes                                    |
+| -------------------: | ----------------------------- | ---------------------------------------- |
+|                 name | string (required)             | The unique interface identifier name. The interface name must use the full interface name (no abbreviated names). For example, interfaces should be specified as Ethernet1 not Et1 |
+|          description | string                        | Configures a one lne ASCII description for the interface. |
+|               enable | boolean: true*, false         | Configures the administrative state for the interface. Setting the value to true will adminstrative enable the interface and setting the value to false will administratively disable the interface. |
+|                state | choices: present*, absent     | Set the state for the interface configuration. |
+|        channel_group | dictionary                    | Configure the interface in a Port Channel. If not present, or number sub key is missing, the Port Channel with be defaulted to be removed |
+|   channel_group.mode | choices: on, active*, passive | Set the mode of the the Port Channel group. |
+| channel_group.number | integer                       | Set the number the Port Channel group.   |
+|   lacp_port_priority | integer                       | Set the lacp port-priority. Will be set to the default value of 32768 if not specified. |
+|            lacp_rate | choices: normal*, fast        | Set the lacp rate. Will be set to the default value if not specified. |
 
 
 ```
@@ -147,7 +158,7 @@ A simple playbook to configure BGP, leaf.yml
 Then run with:
 
     ansible-playbook -i hosts leaf.yml
-​    
+​
 
 
 Developer Information
