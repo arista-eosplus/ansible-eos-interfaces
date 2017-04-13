@@ -7,7 +7,7 @@
  * pull request in the ansible-eos-interfaces repo
  */
 
-// Change this number to force a run of the pipeline: 05
+// Change this number to force a run of the pipeline: 06
 
 pipeline {
     agent { label 'master' }
