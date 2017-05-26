@@ -36,6 +36,7 @@ pipeline {
             steps {
                 // Grab the revision hash and pass it to the test build
                 // sh 'git rev-parse HEAD > revision'
+                sh 'git name-rev --name-only HEAD'
                 sh 'git name-rev --name-only HEAD > revision'
                 build job: 'gar-test-starter',
                       parameters: [
