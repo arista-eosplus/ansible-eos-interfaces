@@ -23,22 +23,21 @@ no interface {{ intf }}
 
 {% elif state == 'present' %}
    {# Set up interface #}
-   {% set intf_block = _eos_config | config_block('interface ' ~ item.name, indent=3) %}
-   {% if intf_block %}
-      {# Interface exists - make sure parameters match #}
 
 interface {{ intf }}
 
-      {# Set the description if necessary #}
-      {% if item.description is defined %}
-         {% set desc = item.description %}
-         {% if desc %}
+   {% set intf_block = _eos_config | config_block('interface ' ~ item.name, indent=3) %}
+
+   {% if item.description is defined %}
+      {% set desc = item.description %}
+      {% if desc is defined and desc %}
 
    description {{ desc }}
 
-         {% elif desc == '' %}
-            {# description contains empty string #}
-            {# default current description if one exists #}
+      {% elif desc == '' %}
+         {# description contains empty string #}
+         {# default current description if one exists #}
+         {% if intf_block %}
             {% set intf_desc = intf_block | join('\n') | re_search('^no description') %}
             {% if not intf_desc %}
 
@@ -47,35 +46,119 @@ interface {{ intf }}
             {% endif %}
          {% endif %}
       {% endif %}
+   {% else %}
+      {# no description defined at all #}
 
-      {# Enable/disable interface if necessary #}
-      {% set enable = item.enable | default(default_enable) %}
-      {% if enable %}
+   default description
 
-   no shutdown
+   {% endif %}
 
-      {% elif enable is defined and not enable %}
+   {# channel group #}
+   {% if item.channel_group is defined %}
+      {% set cg = item.channel_group %}
 
-   shutdown
+   channel-group {{ cg.number }} mode {{ cg.mode|default("active")}}
+
+   {% else %}
+      {% if 'Ethernet' in intf %}
+
+   no channel-group
+
+      {% endif %}
+   {% endif %}
+
+   {# lacp #}
+   {% if 'Ethernet' in intf %}
+   {% if item.lacp is defined and 'Ethernet' in intf %}
+      {% set lacp = item.lacp %}
+      {% if lacp.priority is defined and lacp.priority %}
+
+   lacp port-priority {{ lacp.priority }}
+
+      {% else %}
+
+   default lacp port-priority
+
+      {% endif %}
+      {% if lacp.rate is defined and lacp.rate %}
+
+   lacp rate {{ lacp.rate }}
+
+      {% else %}
+
+   default lacp rate
 
       {% endif %}
 
    {% else %}
-      {# Interface does not yet exist #}
 
-interface {{ intf }}
-
-      {% if item.description is defined %}
-         {% set desc = item.description %}
-         {% if desc is defined and desc %}
-
-   description {{ desc }}
-
-         {% endif %}
-      {% endif %}
-      {% set enbl = (item.enable|default(default_enable) == True) | ternary('no shutdown','shutdown') %}
-
-   {{ enbl }}
+   default lacp port-priority
+   default lacp rate
 
    {% endif %}
+   {% endif %}
+
+   {# vlan #}
+   {% if item.vlan is defined %}
+      {% set vlan = item.vlan %}
+      {% if vlan.access is defined and vlan.access %}
+
+   switchport access vlan {{ vlan.access }}
+
+      {% else %}
+
+   default switchport access vlan
+
+      {% endif %}
+      {% if vlan.mode is defined and vlan.mode %}
+
+   switchport mode {{ vlan.mode }}
+
+      {% else %}
+
+   default switchport mode
+
+      {% endif %}
+      {% if vlan.native is defined and vlan.native %}
+
+   switchport trunk native vlan {{ vlan.native }}
+
+      {% else %}
+
+   default switchport mode
+
+      {% endif %}
+      {% if vlan.allowed is defined and vlan.allowed %}
+
+   switchport trunk allowed vlan {{ vlan.allowed|string }}
+
+      {% else %}
+
+   default switchport trunk allowed vlan
+
+      {% endif %}
+      {% if vlan.group is defined and vlan.group %}
+
+   switchport trunk group {{ vlan.group }}
+
+      {% else %}
+
+   default switchport trunk group
+
+      {% endif %}
+
+   {% else %}
+
+   default switchport access vlan
+   default switchport mode
+   default switchport trunk native vlan
+   default switchport trunk allowed vlan
+   default switchport trunk group
+
+   {% endif %}
+
+   {# Enable/disable interface if necessary #}
+   {% set enbl = (item.enable|default(default_enable) == True) | ternary('no shutdown','shutdown') %}
+
+   {{ enbl }}
 {% endif %}
