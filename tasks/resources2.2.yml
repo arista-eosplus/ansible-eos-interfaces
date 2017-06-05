@@ -11,7 +11,7 @@
     password: "{{ password | default(omit) }}"
     port: "{{ port | default(omit) }}"
     provider: "{{ provider | default(omit) }}"
-    transport: 'cli'
+    transport: "{{ transport | default(omit) }}"
     use_ssl: "{{ use_ssl | default(omit) }}"
     username: "{{ username | default(omit) }}"
   notify: save running config

@@ -20,8 +20,8 @@ pipeline {
     }
     environment {
         projectName = 'ansible-eos-interfaces'
-        emailTo = 'grybak@arista.com'
-        emailFrom = 'grybak+jenkins@arista.com'
+        emailTo = 'ansible-dev+jenkins@arista.com'
+        emailFrom = 'eosplus-dev@arista.com'
     }
 
     stages {
@@ -35,10 +35,8 @@ pipeline {
             }
             steps {
                 // Grab the revision hash and pass it to the test build
-                // sh 'git rev-parse HEAD > revision'
-                sh 'git name-rev --name-only HEAD'
-                sh 'git name-rev --name-only HEAD > revision'
-                build job: 'gar-test-starter',
+                sh 'git rev-parse HEAD > revision'
+                build job: 'Ansible-Role-Test-Starter',
                       parameters: [
                           string(name: 'ROLE_NAME', value: 'ansible-eos-interfaces'),
                           string(name: 'REVISION', value: readFile('revision'))
