@@ -1,0 +1,148 @@
+---
+defaults:
+  module: intf_properties
+
+testcases:
+  - name: Add channel-group
+    arguments:
+      interfaces:
+        - name: Ethernet1
+          description: Ethernet1 with a channel-group
+          channel_group:
+            number: 10
+            mode: active
+        - name: Ethernet2
+          description: Ethernet2 channel-group default mode
+          channel_group:
+            number: 20
+    setup: |
+      interface Ethernet1
+      no description
+      no channel-group
+      interface Ethernet2
+      no description
+      no channel-group
+    present: |
+      interface Ethernet1
+         description Ethernet1 with a channel-group
+         channel-group 10 mode active
+      interface Ethernet2
+         description Ethernet2 channel-group default mode
+         channel-group 20 mode active
+
+  - name: Add channel-group with non-default modes
+    arguments:
+      interfaces:
+        - name: Ethernet1
+          description: Ethernet1 channel-group on
+          channel_group:
+            number: 10
+            mode: 'on'
+        - name: Ethernet2
+          description: Ethernet2 channel-group passive
+          channel_group:
+            number: 20
+            mode: passive
+    setup: |
+      interface Ethernet1
+      no description
+      no channel-group
+      interface Ethernet2
+      no description
+      no channel-group
+    present: |
+      interface Ethernet1
+         description Ethernet1 channel-group on
+         channel-group 10 mode on
+      interface Ethernet2
+         description Ethernet2 channel-group passive
+         channel-group 20 mode passive
+
+  - name: Remove channel group
+    arguments:
+      interfaces:
+        - name: Ethernet1
+          description: Ethernet1 without a channel-group
+    setup: |
+      interface Ethernet1
+      no description
+      channel-group 12 mode active
+    present: |
+      interface Ethernet1
+         description Ethernet1 without a channel-group
+    absent: |
+      interface Ethernet1
+         channel-group 12 mode active
+
+  - name: Set LACP properties
+    arguments:
+      interfaces:
+        - name: Ethernet1
+          description: Ethernet1 lacp port-priority 10000 rate fast
+          lacp_port_priority: 10000
+          lacp_rate: fast
+        - name: Ethernet2
+          description: Ethernet2 lacp port-priority 20000 rate normal
+          lacp_port_priority: 20000
+          lacp_rate: normal
+    setup: |
+      interface Ethernet1
+      no description
+      no lacp port-priority
+      no lacp rate
+      interface Ethernet2
+      no description
+      no lacp port-priority
+      no lacp rate
+    present: |
+      interface Ethernet1
+         description Ethernet1 lacp port-priority 10000 rate fast
+         lacp port-priority 10000
+         lacp rate fast
+      interface Ethernet2
+         description Ethernet2 lacp port-priority 20000 rate normal
+         lacp port-priority 20000
+         lacp rate normal
+    absent: |
+      interface Ethernet1
+         no description
+         lacp port-priority 32768
+         lacp rate normal
+      interface Ethernet2
+         no description
+         lacp port-priority 32768
+
+  - name: Default LACP properties
+    arguments:
+      interfaces:
+        - name: Ethernet1
+          description: Ethernet1 default LACP properties
+        - name: Ethernet2
+          description: Ethernet2 default LACP properties
+    setup: |
+      interface Ethernet1
+      no description
+      lacp port-priority 10101
+      lacp rate fast
+      interface Ethernet2
+      no description
+      lacp port-priority 20202
+      lacp rate fast
+    present: |
+      interface Ethernet1
+         description Ethernet1 default LACP properties
+         lacp port-priority 32768
+         lacp rate normal
+      interface Ethernet2
+         description Ethernet2 default LACP properties
+         lacp port-priority 32768
+         lacp rate normal
+    absent: |
+      interface Ethernet1
+         no description
+         lacp port-priority 10101
+         lacp rate fast
+      interface Ethernet2
+         no description
+         lacp port-priority 20202
+         lacp rate fast

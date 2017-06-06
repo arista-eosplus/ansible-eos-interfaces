@@ -5,6 +5,7 @@
 {% set intf = item.name %}
 {% set state = item.state | default(default_state) %}
 
+{# ******************** #}
 {% if state == 'absent' %}
    {# Ethernet Interfaces can only be defaulted, not removed #}
    {% if 'Ethernet' in intf %}
@@ -20,15 +21,18 @@ no interface {{ intf }}
 
       {% endif %}
    {% endif %}
-
+{# *********************** #}
 {% elif state == 'present' %}
    {# Set up interface #}
    {% set intf_block = _eos_config | config_block('interface ' ~ item.name, indent=3) %}
+
+   {# ============= #}
    {% if intf_block %}
       {# Interface exists - make sure parameters match #}
 
 interface {{ intf }}
 
+      {# -------------------------------- #}
       {# Set the description if necessary #}
       {% if item.description is defined %}
          {% set desc = item.description %}
@@ -46,8 +50,57 @@ interface {{ intf }}
 
             {% endif %}
          {% endif %}
-      {% endif %}
+      {% endif %} {# if item.description is defined #}
 
+      {# ------------------------------------------------ #}
+      {# Channel group, lacp port-priority, and lacp rate #}
+      {# only apply to Ethernet interfaces #}
+
+      {% if 'Ethernet' in intf %}
+         {# Set channel group information if specified #}
+         {% if item.channel_group is defined %}
+            {% set cg = item.channel_group %}
+            {% if cg.number is defined %}
+
+   channel-group {{ cg.number }} mode {{ cg.mode | default(default_cg_mode)}}
+
+            {% endif %}
+         {% else %}
+
+   no channel-group
+
+         {% endif %} {# if item.channel_group is defined #}
+
+         {# Set lacp port-priority if specified #}
+         {% if item.lacp_port_priority is defined %}
+
+   lacp port-priority {{ item.lacp_port_priority }}
+
+         {% else %}
+            {% set curr_priority = intf_block | join('\n') | re_search('^lacp port-priority 32768') %}
+            {% if not curr_priority %}
+
+   default lacp port-priority
+
+            {% endif %}
+         {% endif %} {# if item.lacp_port_priority #}
+
+         {# Set lacp rate if specified #}
+         {% if item.lacp_rate is defined %}
+
+   lacp rate {{ item.lacp_rate }}
+
+         {% else %}
+            {% set curr_rate = intf_block | join('\n') | re_search('lacp rate normal') %}
+            {% if not curr_rate %}
+
+   default lacp rate
+
+            {% endif %}
+         {% endif %} {# if item.lacp_rate #}
+      {% endif %} {# if 'Ethernet' in intf #}
+
+      {# ------------------------------------- #}
       {# Enable/disable interface if necessary #}
       {% set enable = item.enable | default(default_enable) %}
       {% if enable %}
@@ -58,10 +111,13 @@ interface {{ intf }}
 
    shutdown
 
-      {% endif %}
+      {% endif %} {# if enable #}
 
    {% else %}
+      {# ============================ #}
       {# Interface does not yet exist #}
+      {# This block can only be called for a non-Ethernet interface, so #}
+      {# channel-group, lacp port-priority, and lacp rate do not apply #}
 
 interface {{ intf }}
 
@@ -72,10 +128,10 @@ interface {{ intf }}
    description {{ desc }}
 
          {% endif %}
-      {% endif %}
-      {% set enbl = (item.enable|default(default_enable) == True) | ternary('no shutdown','shutdown') %}
+      {% endif %} {# if item.description is defined #}
+      {% set enbl = (item.enable | default(default_enable) == True) | ternary('no shutdown','shutdown') %}
 
    {{ enbl }}
 
-   {% endif %}
-{% endif %}
+   {% endif %} {# intf_block #}
+{% endif %} {# state #}

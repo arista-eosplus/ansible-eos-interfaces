@@ -7,6 +7,10 @@
  * pull request in the ansible-eos-interfaces repo
  */
 
+/*
+ * trigger a build
+ */
+
 pipeline {
     agent { label 'master' }
     options {
