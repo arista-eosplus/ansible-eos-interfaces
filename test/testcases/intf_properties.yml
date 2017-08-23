@@ -3,6 +3,47 @@ defaults:
   module: intf_properties
 
 testcases:
+  - name: Force speed
+    arguments:
+      interfaces:
+        - name: Ethernet1
+          description: Ethernet1 with a speed forced 40gfull
+          speed_forced: 40g
+        - name: Ethernet2
+          description: Ethernet2 with a speed forced 100half
+          speed_forced: 100half
+        - name: Ethernet3
+          description: Ethernet3 with a speed forced 25gfull
+          speed_forced: 25gfull
+        - name: Ethernet4
+          description: Ethernet4 no speed
+    setup: |
+      interface Ethernet1
+      no description
+      no speed
+      interface Ethernet2
+      no description
+      no speed
+      interface Ethernet3
+      no description
+      no speed
+      interface Ethernet4
+      no description
+      no speed
+    present: |
+      interface Ethernet1
+         description Ethernet1 with a speed forced 40gfull
+         speed forced 40gfull
+      interface Ethernet2
+         description Ethernet2 with a speed forced 100half
+         speed forced 100half
+      interface Ethernet3
+         description Ethernet3 with a speed forced 25gfull
+         speed forced 25gfull
+      interface Ethernet4
+         description Ethernet4 no speed
+         no speed
+
   - name: Add channel-group
     arguments:
       interfaces:

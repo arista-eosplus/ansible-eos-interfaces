@@ -98,6 +98,24 @@ interface {{ intf }}
 
             {% endif %}
          {% endif %} {# if item.lacp_rate #}
+
+         {# Force interface speed if specified #}
+         {% if item.speed_forced is defined %}
+            {% if item.speed_forced %}
+               {% set sf = item.speed_forced %}
+               {# Force full duplex if not specified #}
+               {% if 'full' not in sf and 'half' not in sf %}
+                  {% set sf = sf + 'full' %}
+               {% endif %}
+
+   speed forced {{ sf }}
+
+            {% else %}
+
+   no speed
+
+            {% endif %} {# if item.speed_forced #}
+         {% endif %} {# if item.speed_forced is defined #}
       {% endif %} {# if 'Ethernet' in intf #}
 
       {# ------------------------------------- #}
