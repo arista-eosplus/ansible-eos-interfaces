@@ -40,17 +40,18 @@ The tasks in this role are driven by the ``interfaces`` object described below:
 
 **interfaces** (list) each entry contains the following keys:
 
-|                  Key | Type                          | Notes                                    |
-| -------------------: | ----------------------------- | ---------------------------------------- |
-|                 name | string (required)             | The unique interface identifier name. The interface name must use the full interface name (no abbreviated names). For example, interfaces should be specified as Ethernet1 not Et1 |
-|          description | string                        | Configures a one lne ASCII description for the interface. |
-|               enable | boolean: true*, false         | Configures the administrative state for the interface. Setting the value to true will adminstrative enable the interface and setting the value to false will administratively disable the interface. |
-|                state | choices: present*, absent     | Set the state for the interface configuration. |
-|        channel_group | dictionary                    | Configure the interface in a Port Channel. If not present, or number sub key is missing, the Port Channel with be defaulted to be removed |
-|   channel_group.mode | choices: on, active*, passive | Set the mode of the the Port Channel group. |
-| channel_group.number | integer                       | Set the number the Port Channel group.   |
-|   lacp_port_priority | integer                       | Set the lacp port-priority. Will be set to the default value of 32768 if not specified. |
-|            lacp_rate | choices: normal*, fast        | Set the lacp rate. Will be set to the default value if not specified. |
+|                  Key | Type                           | Notes                                    |
+| -------------------: | ------------------------------ | ---------------------------------------- |
+|                 name | string (required)              | The unique interface identifier name. The interface name must use the full interface name (no abbreviated names). For example, interfaces should be specified as Ethernet1 not Et1 |
+|          description | string                         | Configures a one line ASCII description for the interface. |
+|               enable | boolean: true*, false          | Configures the administrative state for the interface. Setting the value to true will administrative enable the interface and setting the value to false will administratively disable the interface. |
+|                state | choices: present*, absent      | Set the state for the interface configuration. |
+|        channel_group | dictionary                     | Configure the interface in a Port Channel. If not present, or number sub key is missing, the Port Channel with be defaulted to be removed |
+|   channel_group.mode | choices: on, active*, passive  | Set the mode of the the Port Channel group. |
+| channel_group.number | integer                        | Set the number the Port Channel group.   |
+|   lacp_port_priority | integer                        | Set the lacp port-priority. Will be set to the default value of 32768 if not specified. |
+|            lacp_rate | choices: normal*, fast         | Set the lacp rate. Will be set to the default value if not specified. |
+|         speed_forced | choices: string, false, unset* | Force speed of an Ethernet interface. The default if speed_forced is not set is that no action will be taken. False will unset the interface speed. A speed string will attempt to set the command on the interface. If the string does not include a duplex the role assumes full duplex (Ex: 40g -> 40gfull). A full speed forced string can also be provided (Ex: 25gfull, 100gfull, 1000full, 1000half, etc...). |
 
 
 ```
